@@ -1,4 +1,11 @@
-import { Button, Callout, Card, Collapse, Intent } from "@blueprintjs/core";
+import {
+  Button,
+  Callout,
+  Card,
+  Collapse,
+  Intent,
+  useHotkeys,
+} from "@blueprintjs/core";
 import React from "react";
 import { NumberInput } from "~src/Components/NumberInput";
 import { SectionDivider } from "~src/Components/SectionDivider";
@@ -11,19 +18,38 @@ import { runSim } from "../exec";
 import { Team } from "./Team";
 
 export function Simple() {
-  const { ready, workers } = useAppSelector((state: RootState) => {
-    return {
-      ready: state.sim.ready,
-      workers: state.sim.workers,
-    };
-  });
+  const { ready, workers, cfg, runState } = useAppSelector(
+    (state: RootState) => {
+      return {
+        ready: state.sim.ready,
+        workers: state.sim.workers,
+        cfg: state.sim.cfg,
+        runState: state.sim.run,
+      };
+    }
+  );
   const dispatch = useAppDispatch();
   const [open, setOpen] = React.useState<boolean>(false);
   const [showActionList, setShowActionList] = React.useState<boolean>(true);
-  const [showOptions, setShowOptions] = React.useState<boolean>(true);
+  const [showOptions, setShowOptions] = React.useState<boolean>(false);
+
+  const hotkeys = React.useMemo(
+    () => [
+      {
+        combo: "Esc",
+        global: true,
+        label: "Exit edit",
+        onKeyDown: () => {
+          dispatch(simActions.editCharacter({ index: -1 }));
+        },
+      },
+    ],
+    []
+  );
+  useHotkeys(hotkeys);
 
   const run = () => {
-    dispatch(runSim());
+    dispatch(runSim(cfg));
     setOpen(true);
   };
   return (
@@ -53,7 +79,10 @@ export function Simple() {
           keepChildrenMounted
           className="basis-full flex flex-col"
         >
-          <ActionList />
+          <ActionList
+            cfg={cfg}
+            onChange={(v) => dispatch(simActions.setCfg(v))}
+          />
         </Collapse>
         <SectionDivider>Sim Options</SectionDivider>
         <div className="ml-auto mr-2">
@@ -81,13 +110,16 @@ export function Simple() {
         </Collapse>
       </div>
       <div className="sticky bottom-0 bg-bp-bg p-2 wide:ml-2 wide:mr-2 flex flex-row flex-wrap place-items-center gap-x-1 gap-y-1">
-        <div className="ml-auto basis-full wide:basis-1/3 p-1">
+        <div className="basis-full wide:basis-0 flex-grow p-1">
+          {`Workers available: ${ready}`}
+        </div>
+        <div className="basis-full wide:basis-1/3 p-1">
           <Button
             icon="play"
             fill
             intent="primary"
             onClick={run}
-            disabled={ready < workers}
+            disabled={ready < workers || runState.progress !== -1}
           >
             {ready < workers ? "Loading workers" : "Run"}
           </Button>
