@@ -139,19 +139,35 @@ fs.writeFileSync(
 const weapons = genshindb.weapons("names", { matchCategories: true });
 
 let weap = {};
+let weapTrans = {
+  English: {},
+  Chinese: {},
+  Japanese: {},
+  Spanish: {},
+};
 
 weapons.forEach((e) => {
-  const x = genshindb.weapons(e);
+  const eng = genshindb.weapons(e);
 
   let filename =
     "./static/images/weapons/" +
-    x.name.replace(/[^0-9a-z]/gi, "").toLowerCase() +
+    eng.name.replace(/[^0-9a-z]/gi, "").toLowerCase() +
     ".png";
 
-  weap[x.name.replace(/[^0-9a-z]/gi, "").toLowerCase()] = x.name;
+  const key = eng.name.replace(/[^0-9a-z]/gi, "").toLowerCase();
+  weap[key] = eng.name;
+
+  const cn = genshindb.weapons(e, { resultLanguage: "CHS" });
+  const jp = genshindb.weapons(e, { resultLanguage: "JP" });
+  const es = genshindb.weapons(e, { resultLanguage: "ES" });
+
+  weapTrans["English"][key] = eng.name;
+  weapTrans["Chinese"][key] = cn.name;
+  weapTrans["Japanese"][key] = jp.name;
+  weapTrans["Spanish"][key] = es.name;
 
   if (!fs.existsSync(filename)) {
-    download_image(x.images.icon, filename)
+    download_image(eng.images.icon, filename)
       .then((msg) => {
         console.log("done downloading to file: ", filename);
       })
@@ -164,6 +180,12 @@ weapons.forEach((e) => {
 fs.writeFileSync(
   "./src/Components/data/weaponNames.json",
   JSON.stringify(weap),
+  "utf-8"
+);
+
+fs.writeFileSync(
+  "./public/locales/weapons.json",
+  JSON.stringify(weapTrans),
   "utf-8"
 );
 
