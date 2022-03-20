@@ -90,6 +90,7 @@ export default function Nav() {
           <option value="Chinese">{t("nav.chinese")}</option>
           <option value="Japanese">{t("nav.japanese")}</option>
           <option value="Spanish">{t("nav.spanish")}</option>
+          <option value="Russian">{t("nav.russian")}</option>
         </HTMLSelect>
       </NavbarGroup>
     </Navbar>
