@@ -154,13 +154,16 @@ export function parseLogV2(
       e.color = "#6B7280";
     }
 
+    const d = line.logs;
+    //hightlight active char
+    if (e.event === "action" && line.msg.includes("executed") && d.action === "swap") {
+      activeIndex = e.char
+    }
     //skip if event is not in selected
     if (selected.indexOf(e.event) == -1) {
       return;
     }
-
-    const d = line.logs;
-    //set icon/color etc... based one vent
+    //set icon/color etc... based on event
     switch (e.event) {
       case "damage":
         //grab dmg amount
@@ -199,7 +202,6 @@ export function parseLogV2(
         break;
       case "action":
         if (line.msg.includes("executed") && d.action === "swap") {
-          activeIndex = team.findIndex((e) => e === d.target) + 1;
           e.msg += " to " + d.target;
         }
 
