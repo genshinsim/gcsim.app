@@ -83,6 +83,7 @@ export function parseLogV2(
         icon: "iso",
         amount: 0,
         target: "",
+        added: line.frame,
         ended: line.ended,
       };
       ended[e.ended][index].push(e);
@@ -147,6 +148,7 @@ export function parseLogV2(
       icon: "circle",
       amount: 0,
       target: "",
+      added: line.frame,
       ended: line.ended,
     };
 
@@ -324,6 +326,21 @@ export function parseLogV2(
           default:
             e.msg += strFrameWithSec(d.expiry);
             e.msg = d.key + " " + e.msg;
+        }
+
+        // this hacky but i don't care
+        if (e.ended === e.frame && line.msg.includes("refreshed")) {
+          let idx = lines.findIndex((a) => {
+            return a.event === "status"
+              && line.char_index === a.char_index
+              && !a.logs.overwrite
+              && a.logs.key === line.logs.key
+              && line.frame >= a.frame && line.frame < a.ended
+          })
+          if (idx !== -1) {
+            e.added = lines[idx].frame
+            e.ended = lines[idx].ended
+          }
         }
 
         if (d.target != undefined) {
