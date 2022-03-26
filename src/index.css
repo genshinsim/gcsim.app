@@ -20,6 +20,13 @@
 
 body {
   background-color: #293742;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1;
 }
 
 /* Chrome, Safari, Edge, Opera */
