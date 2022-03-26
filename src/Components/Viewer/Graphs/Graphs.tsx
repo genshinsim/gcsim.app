@@ -234,7 +234,7 @@ export default function Graphs({ data }: { data: SimResults }) {
               </span>
               <ResponsiveContainer width="95%" height={288}>
                 <BarChart data={dmgDetail}>
-                  <Tooltip />
+                  <Tooltip labelStyle={{ color: "black" }} />
                   <YAxis
                     type="number"
                     dataKey="value"
@@ -268,7 +268,7 @@ export default function Graphs({ data }: { data: SimResults }) {
               <ResponsiveContainer width="95%" height={288}>
                 <BarChart data={useCountDetails}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <Tooltip />
+                  <Tooltip labelStyle={{ color: "black" }} />
                   <XAxis
                     type="category"
                     dataKey="name"
