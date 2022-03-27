@@ -162,6 +162,7 @@ export default function Graphs({ data }: { data: SimResults }) {
                   layout="vertical"
                   height={36}
                   formatter={renderCustomizedLegend}
+                  onClick={(e: any) => setCharSelected(e.value)}
                 />
                 <Pie
                   isAnimationActive={false}
@@ -192,7 +193,7 @@ export default function Graphs({ data }: { data: SimResults }) {
               <Trans>viewer.average_character_field</Trans>
             </span>
             <ResponsiveContainer width="95%" height={288}>
-              <PieChart>
+              <PieChart margin={{ top: 0, left: 0, right: 0, bottom: 0 }}>
                 <Tooltip />
                 <Legend
                   verticalAlign="middle"
@@ -200,6 +201,7 @@ export default function Graphs({ data }: { data: SimResults }) {
                   layout="vertical"
                   height={36}
                   formatter={renderCustomizedLegend}
+                  onClick={(e: any) => setCharSelected(e.value)}
                 />
                 <Pie
                   isAnimationActive={false}
