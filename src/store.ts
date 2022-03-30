@@ -17,6 +17,7 @@ if (localStorage.getItem(simStateKey)) {
   s.edit_index = -1;
   s.ready = 0;
   s.run = defaultRunStat;
+  s.adv_cfg_err = "";
   if (!s.GOChars) {
     s.GOChars = [];
   }
