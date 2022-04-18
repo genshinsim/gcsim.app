@@ -303,9 +303,12 @@ export const items: ICharacter[] = Object.keys(characterKeyToICharacter).map(
   (k) => characterKeyToICharacter[k]
 );
 
+export const isTraveler = (key: string): boolean =>
+  key == "aether" || key == "lumine" || key == "traveler";
+
 export const newChar = (info: ICharacter): Character => {
   let key = info.key;
-  if ((key == "aether" || key == "lumine" || key == "traveler") && info.element != "none")
+  if (isTraveler(key) && info.element != "none")
     key = "traveler" + info.element;
   //default weapons
   return {

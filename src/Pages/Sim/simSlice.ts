@@ -7,7 +7,7 @@ import {
   Talent,
   Weapon,
 } from "~/src/types";
-import { characterKeyToICharacter, ICharacter } from "~src/Components/Character";
+import { isTraveler, ICharacter } from "~src/Components/Character";
 import { AppThunk } from "~src/store";
 import { ascLvlMin, maxLvlToAsc } from "~src/util";
 import { WorkerPool } from "~src/WorkerPool";
@@ -252,7 +252,7 @@ export const simSlice = createSlice({
       action: PayloadAction<ICharacter>
     ) => {
       let key = action.payload.key;
-      if ((key == "aether" || key == "lumine" || key == "traveler") && action.payload.element != "none")
+      if (isTraveler(key) && action.payload.element != "none")
         key = "traveler" + action.payload.element;
 
       state.team[state.edit_index].name = key;

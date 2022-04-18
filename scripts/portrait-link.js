@@ -76,12 +76,12 @@ const names = [
 
 const travelers = [
   "electro",
-	"anemo",
-	"geo",
-	"hydro",
-	"cryo",
-	"pyro",
-	"dendro"
+  "anemo",
+  "geo",
+  "hydro",
+  "cryo",
+  "pyro",
+  "dendro"
 ];
 
 let chars = {};
