@@ -60,32 +60,18 @@ export function parseFromGO(val: string): IGOODImport {
       characters: [],
     };
   }
-  // if (data.source !== "Genshin Optimizer") {
-  //   result.err = "Only databases from Genshin Optimizer accepted";
-  //   return result;
-  // }
+  let weaponBank: WeaponBank = extractWeapons(data.weapons);
 
-  let weaponBank: WeaponBank = {};
   let artifactBank: GOODArtifactBank = {};
-  if (data.weapons) {
-    weaponBank = extractWeapons(data.weapons);
-  } else {
-    result.err = "No weapons found";
-  }
-
-  //Store artifacts based on character
   if (data.artifacts) {
     artifactBank = extractArtifacts(data.artifacts);
   }
 
-  //build the characters
-  let chars: Character[] = buildCharactersFromGOOD(
+  result.characters = buildCharactersFromGOOD(
     data.characters,
     weaponBank,
     artifactBank
   );
-
-  result.characters = chars;
   return result;
 }
 const extractWeapons = (weapons: GOODWeapon[]): WeaponBank => {
