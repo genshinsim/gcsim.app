@@ -4,12 +4,14 @@ import {
   Menu,
   MenuDivider,
   MenuItem,
+  AnchorButton,
 } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { LoadGOOD } from "~src/Components/GOOD";
 import { useAppSelector, RootState, useAppDispatch } from "~src/store";
-import { LoadGOOD, SimWorkerOptions } from "../Components";
+import { SimWorkerOptions } from "../Components";
 import { SimProgress } from "../Components/SimProgress";
 import { runSim } from "../exec";
 import { simActions } from "../simSlice";
