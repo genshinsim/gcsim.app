@@ -2,20 +2,33 @@ import { Character, defaultStats, Weapon } from "~/src/types";
 
 import ArtifactMainStatsData from "~src/Components/Artifacts/artifact_main_gen.json";
 import { characterKeyToICharacter } from "~src/Components/Character";
+import { weapons } from "~src/Components/Weapon";
 import { ascLvlMax, StatToIndexMap } from "~src/util";
-
-import { ICharacter, IGOOD, GOODArtifact, StatKey } from "./goodTypes";
+import {
+  GOODArtifact,
+  GOODArtifactSetKey,
+  GOODCharacter,
+  GOODCharacterKey,
+  GOODStatKey,
+  GOODWeapon,
+  GOODWeaponKey,
+  IGOOD,
+} from "./GOODTypes";
 
 export interface IGOODImport {
   err: string;
   characters: Character[];
 }
+
+type WeaponBank = {
+  [char in GOODCharacterKey]?: Weapon;
+};
+//currently don't have inhouse artifact type
+type GOODArtifactBank = {
+  [char in GOODCharacterKey]?: GOODArtifact[];
+};
 type rarityValue = "1" | "2" | "3" | "4" | "5";
 const convertRarity: rarityValue[] = ["1", "2", "3", "4", "5"];
-
-interface GOODGearBank {
-  [key: string]: { weapon: Weapon; artifact: GOODArtifact[] };
-}
 
 export function parseFromGO(val: string): IGOODImport {
   let result: {
@@ -36,92 +49,85 @@ export function parseFromGO(val: string): IGOODImport {
   try {
     data = JSON.parse(val);
   } catch (e) {
-    if (val === "") {
-      result.err = "Please enter JSON";
-      return result;
-    }
-
     result.err = "Invalid JSON";
     return result;
   }
-  // if (data.source !== "Genshin Optimizer") {
-  //   result.err = "Only databases from Genshin Optimizer accepted";
-  //   return result;
-  // }
-  const goodGearBank: GOODGearBank = {};
-
-  if (data.weapons) {
-    data.weapons.forEach((goodweapon) => {
-      let charKey = GOODKeytoGCSIMKey(goodweapon.location);
-      if (charKey === "") {
-        //skip this weapon
-        return;
-      }
-
-      let importedWeapon: Weapon = {
-        name: GOODKeytoGCSIMKey(goodweapon.key),
-        level: goodweapon.level,
-        max_level: ascLvlMax(goodweapon.ascension),
-        refine: goodweapon.refinement,
-      };
-      goodGearBank[charKey] = {
-        weapon: importedWeapon,
-        artifact: [],
-      };
-    });
-  } else {
-    result.err = "No weapons found";
-  }
-
-  //Store artifacts based on character
-  if (data.artifacts) {
-    data.artifacts.forEach((artifact) => {
-      let charKey = GOODKeytoGCSIMKey(artifact.location);
-      if (Object.keys(goodGearBank).includes(charKey)) {
-        if (goodGearBank[charKey].artifact.length < 5) {
-          goodGearBank[charKey].artifact.push(artifact);
-        } else {
-          result.err = `Too many artifacts on ${charKey} `;
-          return result;
-        }
-      } else if (charKey === "") {
-      } else {
-        goodGearBank[charKey].artifact = [artifact];
-      }
-    });
-  }
-  //build the characters
-  let chars: Character[] = [];
   if (!data.characters) {
     return {
       err: "No Characters Found",
       characters: [],
     };
   }
-  data.characters.forEach((c) => {
-    //convert GOOD key to our key
-    let char = importCharFromGOOD(c, goodGearBank);
-    if (char === undefined) {
-      //skip char
-      return;
-    }
-    chars.push(char);
-  });
+  if (!data.weapons) {
+    return {
+      err: "No Weapons Found",
+      characters: [],
+    };
+  }
+  // if (data.source !== "Genshin Optimizer") {
+  //   result.err = "Only databases from Genshin Optimizer accepted";
+  //   return result;
+  // }
 
-  //sort chars by element -> name
-  chars.sort((a, b) => {
-    if (b.name > a.name) {
-      return -1;
-    }
-    if (b.name < a.name) {
-      return 1;
-    }
-    return 0;
-  });
+  let weaponBank: WeaponBank = {};
+  let artifactBank: GOODArtifactBank = {};
+  if (data.weapons) {
+    weaponBank = extractWeapons(data.weapons);
+  } else {
+    result.err = "No weapons found";
+  }
+
+  //Store artifacts based on character
+  if (data.artifacts) {
+    artifactBank = extractArtifacts(data.artifacts);
+  }
+
+  //build the characters
+  let chars: Character[] = buildCharactersFromGOOD(
+    data.characters,
+    weaponBank,
+    artifactBank
+  );
 
   result.characters = chars;
   return result;
 }
+
+const extractWeapons = (weapons: GOODWeapon[]): WeaponBank => {
+  const result: WeaponBank = {};
+  weapons.forEach((goodWeapon) => {
+    let GOODCharKey = goodWeapon.location;
+    if (GOODCharKey !== "") {
+      result[GOODCharKey] = GOODWeapontoSrlWeapon(goodWeapon);
+    }
+  });
+  return result;
+};
+
+const GOODWeapontoSrlWeapon = (weapon: GOODWeapon): Weapon => {
+  return {
+    name: GOODKeytoGCSIMKey(weapon.key),
+    level: weapon.level,
+    max_level: ascLvlMax(weapon.ascension),
+    refine: weapon.refinement,
+  };
+};
+const extractArtifacts = (artifacts: GOODArtifact[]): GOODArtifactBank => {
+  const result: GOODArtifactBank = {};
+  artifacts.forEach((goodArtifact) => {
+    let GOODCharKey = goodArtifact.location;
+    if (GOODCharKey === "") {
+      return;
+    } else {
+      if (result[GOODCharKey] === undefined) {
+        result[GOODCharKey] = [goodArtifact];
+      } else {
+        result[GOODCharKey]?.push(goodArtifact);
+      }
+    }
+  });
+  return result;
+};
 
 const sumArtifactStats = (artifacts: GOODArtifact[]): number[] => {
   const totalStats = [
@@ -134,26 +140,28 @@ const sumArtifactStats = (artifacts: GOODArtifact[]): number[] => {
         ArtifactMainStatsData[convertRarity[artifact.rarity - 1]][
           artifact.mainStatKey
         ][artifact.level];
-      totalStats[StatToIndexMap[goodStattoSrlStat(artifact.mainStatKey)]] +=
-        mainStatValue;
+      const srlStat = goodStattoSrlStat(artifact.mainStatKey);
+      if (srlStat === undefined) return;
+      totalStats[StatToIndexMap[srlStat]] += mainStatValue;
     } else {
       console.log("pepegaW artifact");
+      return;
     }
 
     artifact.substats.forEach((substat) => {
+      const srlStat = goodStattoSrlStat(substat.key);
+      if (srlStat === undefined) return;
       if (substat.key.includes("_")) {
-        totalStats[StatToIndexMap[goodStattoSrlStat(substat.key)]] +=
-          substat.value / 100;
+        totalStats[StatToIndexMap[srlStat]] += substat.value / 100;
       } else {
-        totalStats[StatToIndexMap[goodStattoSrlStat(substat.key)]] +=
-          substat.value;
+        totalStats[StatToIndexMap[srlStat]] += substat.value;
       }
     });
   });
   return totalStats;
 };
 
-function goodStattoSrlStat(goodStat: StatKey): string {
+function goodStattoSrlStat(goodStat: GOODStatKey): string | undefined {
   switch (goodStat) {
     case "hp":
       return "HP";
@@ -226,58 +234,85 @@ const tallyArtifactSet = (
   return setKeyTally;
 };
 
-export function importCharFromGOOD(
-  goodObj: ICharacter,
-  goodGearBank: GOODGearBank
-): Character | undefined {
-  //find char
+function buildCharactersFromGOOD(
+  goodChars: GOODCharacter[],
+  weaponBank: WeaponBank,
+  goodArtifactBank: GOODArtifactBank
+) {
+  const result: Character[] = [];
+  goodChars.forEach((goodChar) => {
+    let char = GOODChartoSrlChar(goodChar, weaponBank[goodChar.key]);
+    if (char === undefined) {
+      //skip char
+      return;
+    }
+    char = equipArtifacts(char, goodArtifactBank[goodChar.key]);
 
-  if (goodObj === undefined) {
-    //stop here
-    return undefined;
-  }
+    result.push(char);
+  });
+  return result;
+}
+
+export function GOODChartoSrlChar(
+  goodChar: GOODCharacter,
+  weapon: Weapon | undefined
+): Character | undefined {
   let today = new Date();
   //copy over all the attributes we care about; ignore anything
   //we don't need
-  const name = GOODKeytoGCSIMKey(goodObj.key);
+  const name = GOODKeytoGCSIMKey(goodChar.key);
   const iChar = characterKeyToICharacter[name];
   if (iChar == undefined) {
     return undefined;
   }
-  let setCount, statTotal;
-  if (goodGearBank[name].artifact === undefined) {
-    setCount = {};
-    statTotal = defaultStats;
-  } else {
-    setCount = tallyArtifactSet(goodGearBank[name].artifact);
-    statTotal = sumArtifactStats(goodGearBank[name].artifact);
-  }
-  let char = {
+
+  return {
     name: name,
-    level: goodObj.level,
-    max_level: ascLvlMax(goodObj.ascension),
+    level: goodChar.level,
+    max_level: ascLvlMax(goodChar.ascension),
     element: iChar.element,
-    cons: goodObj.constellation,
-    weapon: goodGearBank[name].weapon,
+    cons: goodChar.constellation,
+    weapon: weapon ?? {
+      name: "dullblade",
+      refine: 1,
+      level: 1,
+      max_level: 20,
+    },
     talents: {
-      attack: goodObj.talent.auto,
-      skill: goodObj.talent.skill,
-      burst: goodObj.talent.burst,
+      attack: goodChar.talent.auto,
+      skill: goodChar.talent.skill,
+      burst: goodChar.talent.burst,
     },
     //need to sum stats
-    stats: statTotal,
+    stats: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     snapshot: [
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ],
-    sets: setCount,
+    sets: {},
     date_added: today.toLocaleDateString(),
   };
-
-  return char;
+}
+function equipArtifacts(
+  char: Character,
+  charArtifacts: GOODArtifact[] | undefined
+): Character {
+  if (charArtifacts === undefined || charArtifacts.length === 0) {
+    return char;
+  } else {
+    const sets = tallyArtifactSet(charArtifacts);
+    const stats = sumArtifactStats(charArtifacts);
+    return {
+      ...char,
+      stats,
+      sets,
+    };
+  }
 }
 
-export function GOODKeytoGCSIMKey(s: string) {
-  switch (s) {
+export function GOODKeytoGCSIMKey(
+  goodKey: GOODArtifactSetKey | GOODCharacterKey | GOODWeaponKey
+) {
+  switch (goodKey) {
     case "KaedeharaKazuha":
       return "kazuha";
     case "KamisatoAyaka":
@@ -295,7 +330,8 @@ export function GOODKeytoGCSIMKey(s: string) {
     case "AratakiItto":
       return "itto";
   }
-  const result = s
+
+  const result = goodKey
     .toString()
     .replace(/[^0-9a-z]/gi, "")
     .toLowerCase();
