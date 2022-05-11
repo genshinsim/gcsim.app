@@ -117,7 +117,7 @@ export function Debugger({ data, team, searchable }: { data: DebugRow[]; team: s
     for (var index = lastSearchIndex; index < total; index++) {
       for (let msg of searchable[index]) {
         if (msg.indexOf(val) > -1) {
-          console.log(index);
+          console.log(index, lastSearchIndex);
           lastSearchIndex = index + 1;
           rowVirtualizer.scrollToIndex(index, { align: 'start' });
           return;
@@ -142,7 +142,9 @@ export function Debugger({ data, team, searchable }: { data: DebugRow[]; team: s
               <Button
                 icon="reset"
                 intent="warning"
-                onClick={() => { searchRef.current.value = ''; rowVirtualizer.scrollToIndex(0) }}
+                onClick={() => { 
+                  searchRef.current.value = ''; lastSearchIndex = 0; rowVirtualizer.scrollToIndex(0) 
+                }}
               />
             </FormGroup>
           }
