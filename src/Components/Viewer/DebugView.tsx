@@ -3,6 +3,18 @@ import { DebugItem, DebugRow } from "./parse";
 import { useVirtual } from "react-virtual";
 import AutoSizer from "react-virtualized-auto-sizer";
 import React from "react";
+import {
+  Button,
+  ButtonGroup,
+  Callout,
+  Checkbox,
+  FormGroup,
+  InputGroup,
+  Position,
+  Spinner,
+  SpinnerSize,
+  Toaster,
+} from "@blueprintjs/core";
 
 type buffSetting = {
   start: number;
@@ -64,7 +76,9 @@ const Row = ({
   );
 };
 
-export function Debugger({ data, team }: { data: DebugRow[]; team: string[] }) {
+let lastSearchIndex: number;
+
+export function Debugger({ data, team, searchable }: { data: DebugRow[]; team: string[], searchable: { [key: number]: any } }) {
   const parentRef = React.useRef<HTMLDivElement>(null!);
   const [hl, sethl] = React.useState<buffSetting>({
     start: 0,
@@ -104,8 +118,37 @@ export function Debugger({ data, team }: { data: DebugRow[]; team: string[] }) {
     );
   });
 
+  const searchAndScroll = (val: string) => {
+    for (let i in searchable) {
+      for (let msg of searchable[i]) {
+        if (msg.indexOf(val) > -1) {
+          console.log(i);
+          rowVirtualizer.scrollToIndex(+i, { align: 'start' });
+          return;
+        }
+      }
+    }
+  }
+
   return (
     <div className="h-full m-2 p-2 rounded-md bg-gray-600 text-xs flex flex-col min-w-[60rem] min-h-[20rem]">
+      <FormGroup label="Search" inline>
+        <InputGroup
+          type="text"
+          onChange={(v) => {
+            setTimeout(() => { const val = v.target.value; searchAndScroll(val) }, 3000)
+          }}
+          rightElement={
+            <FormGroup>
+              <Button
+                icon="arrow-down"
+                intent="warning"
+              />
+            </FormGroup>
+          }
+        />
+      </FormGroup>
+
       <AutoSizer defaultHeight={100}>
         {({ height, width }) => (
           <div
