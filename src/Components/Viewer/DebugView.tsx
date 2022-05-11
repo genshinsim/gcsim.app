@@ -76,10 +76,11 @@ const Row = ({
   );
 };
 
-let lastSearchIndex: number;
+let lastSearchIndex: number = 0;
 
 export function Debugger({ data, team, searchable }: { data: DebugRow[]; team: string[], searchable: { [key: number]: any } }) {
   const parentRef = React.useRef<HTMLDivElement>(null!);
+  const searchRef = React.useRef<HTMLInputElement>(null!);
   const [hl, sethl] = React.useState<buffSetting>({
     start: 0,
     end: 0,
@@ -119,11 +120,13 @@ export function Debugger({ data, team, searchable }: { data: DebugRow[]; team: s
   });
 
   const searchAndScroll = (val: string) => {
-    for (let i in searchable) {
-      for (let msg of searchable[i]) {
+    let total = Object.keys(searchable).length;
+    for (var index = lastSearchIndex; index < total; index++) {
+      for (let msg of searchable[index]) {
         if (msg.indexOf(val) > -1) {
-          console.log(i);
-          rowVirtualizer.scrollToIndex(+i, { align: 'start' });
+          console.log(index);
+          lastSearchIndex = index + 1;
+          rowVirtualizer.scrollToIndex(index, { align: 'start' });
           return;
         }
       }
@@ -135,14 +138,18 @@ export function Debugger({ data, team, searchable }: { data: DebugRow[]; team: s
       <FormGroup label="Search" inline>
         <InputGroup
           type="text"
-          onChange={(v) => {
-            setTimeout(() => { const val = v.target.value; searchAndScroll(val) }, 3000)
-          }}
+          inputRef={searchRef}
           rightElement={
             <FormGroup>
               <Button
                 icon="arrow-down"
                 intent="warning"
+                onClick={() => { searchAndScroll(searchRef.current.value) }}
+              />
+              <Button
+                icon="reset"
+                intent="warning"
+                onClick={() => { searchRef.current.value = ''; rowVirtualizer.scrollToIndex(0) }}
               />
             </FormGroup>
           }
