@@ -5,15 +5,8 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import React from "react";
 import {
   Button,
-  ButtonGroup,
-  Callout,
-  Checkbox,
   FormGroup,
   InputGroup,
-  Position,
-  Spinner,
-  SpinnerSize,
-  Toaster,
 } from "@blueprintjs/core";
 
 type buffSetting = {
