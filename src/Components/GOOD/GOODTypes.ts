@@ -2,51 +2,40 @@ export interface IGOOD {
   format: "GOOD"; // A way for people to recognize this format.
   version: number; // GOOD API version.
   source: string; // The app that generates this data.
-  characters?: ICharacter[];
+  characters?: GOODCharacter[];
   artifacts?: GOODArtifact[];
-  weapons?: IWeapon[];
+  weapons?: GOODWeapon[];
+  materials?: Object;
 }
-
-export interface IArtifact {
-  setKey: ArtifactSetKey; //e.g. "GladiatorsFinale"
-  slotKey: SlotKey; //e.g. "plume"
+export interface GOODArtifact {
+  setKey: GOODArtifactSetKey; //e.g. "GladiatorsFinale"
+  slotKey: GOODSlotKey; //e.g. "plume"
   level: number; //0-20 inclusive
   rarity: number; //1-5 inclusive
-  mainStatKey: StatKey;
-  location: CharacterKey | ""; //where "" means not equipped.
+  mainStatKey: GOODStatKey;
+  location: GOODCharacterKey | ""; //where "" means not equipped.
   lock: boolean; //Whether the artifact is locked in game.
   substats: ISubstat[];
 }
 
-export interface GOODArtifact {
-  setKey: string;
-  slotKey: SlotKey;
-  icon: string;
-  rarity: number;
-  level: number;
-  mainStatKey: StatKey | "";
-  location: CharacterKey | ""
-  substats: ISubstat[];
-}
-
 export interface ISubstat {
-  key: StatKey; //e.g. "critDMG_"
-  value: number; //e.g. 19.4
+  key: GOODStatKey;
+  value: number;
 }
 
-export type SlotKey = "flower" | "plume" | "sands" | "goblet" | "circlet";
+export type GOODSlotKey = "flower" | "plume" | "sands" | "goblet" | "circlet";
 
-export interface IWeapon {
-  key: WeaponKey; //"CrescentPike"
+export interface GOODWeapon {
+  key: GOODWeaponKey; //"CrescentPike"
   level: number; //1-90 inclusive
   ascension: number; //0-6 inclusive. need to disambiguate 80/90 or 80/80
   refinement: number; //1-5 inclusive
-  location: CharacterKey | ""; //where "" means not equipped.
+  location: GOODCharacterKey | ""; //where "" means not equipped.
   lock: boolean; //Whether the weapon is locked in game.
 }
 
-export interface ICharacter {
-  key: CharacterKey; //e.g. "Rosaria"
+export interface GOODCharacter {
+  key: GOODCharacterKey; //e.g. "Rosaria"
   level: number; //1-90 inclusive
   constellation: number; //0-6 inclusive
   ascension: number; //0-6 inclusive. need to disambiguate 80/90 or 80/80
@@ -66,28 +55,7 @@ export interface Weapon {
   refinement: number;
 }
 
-
-
-export interface Character {
-  key: string;
-  name: string;
-  element: string;
-  icon: string;
-  level: number;
-  constellation: number;
-  ascension: number;
-  talent: { auto: number; skill: number; burst: number };
-  weapontype: string;
-  weapon: Weapon;
-  artifact: {
-    flower: GOODArtifact;
-    plume: GOODArtifact;
-    sands: GOODArtifact;
-    goblet: GOODArtifact;
-    circlet: GOODArtifact;
-  };
-}
-export type StatKey =
+export type GOODStatKey =
   | "hp" //HP
   | "hp_" //HP%
   | "atk" //ATK
@@ -105,9 +73,10 @@ export type StatKey =
   | "electro_dmg_" //Electro DMG Bonus%
   | "hydro_dmg_" //Hydro DMG Bonus%
   | "pyro_dmg_" //Pyro DMG Bonus%
-  | "cryo_dmg_"; //Cryo DMG Bonus%
+  | "cryo_dmg_" //Cryo DMG Bonus%
+  | ""; //Some scanners use this
 
-export type ArtifactSetKey =
+export type GOODArtifactSetKey =
   | "Adventurer" //Adventurer
   | "ArchaicPetra" //Archaic Petra
   | "Berserker" //Berserker
@@ -146,7 +115,7 @@ export type ArtifactSetKey =
   | "ViridescentVenerer" //Viridescent Venerer
   | "WanderersTroupe"; //Wanderer's Troupe
 
-export type CharacterKey =
+export type GOODCharacterKey =
   | "Albedo" //Albedo
   | "Aloy" //Aloy
   | "Amber" //Amber
@@ -166,6 +135,7 @@ export type CharacterKey =
   | "KaedeharaKazuha" //Kaedehara Kazuha
   | "Kaeya" //Kaeya
   | "KamisatoAyaka" //Kamisato Ayaka
+  | "KamisatoAyato" //Kamisato Ayato
   | "Keqing" //Keqing
   | "Klee" //Klee
   | "KujouSara" //Kujou Sara
@@ -179,6 +149,7 @@ export type CharacterKey =
   | "Rosaria" //Rosaria
   | "SangonomiyaKokomi" //Sangonomiya Kokomi
   | "Sayu" //Sayu
+  | "Shenhe" //Shenhe
   | "Sucrose" //Sucrose
   | "Tartaglia" //Tartaglia
   | "Thoma" //Thoma
@@ -188,11 +159,13 @@ export type CharacterKey =
   | "Xiao" //Xiao
   | "Xingqiu" //Xingqiu
   | "Xinyan" //Xinyan
+  | "YaeMiko" //Yae Miko
   | "Yanfei" //Yanfei
   | "Yoimiya" //Yoimiya
+  | "YunJin" //Yun Jin
   | "Zhongli"; //Zhongli
 
-export type WeaponKey =
+export type GOODWeaponKey =
   | "Akuoumaru" //Akuoumaru
   | "AlleyHunter" //Alley Hunter
   | "AmenomaKageuchi" //Amenoma Kageuchi
