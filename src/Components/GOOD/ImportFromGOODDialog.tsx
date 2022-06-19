@@ -11,7 +11,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "~src/store";
 import { userDataActions } from "../../Pages/Sim/userDataSlice";
-import { IGOODImport, parseFromGO } from "./Import";
+import { IGOODImport, parseFromGOOD } from "./parseFromGOOD";
 
 type Props = {
   isOpen: boolean;
@@ -24,7 +24,7 @@ const AppToaster = Toaster.create({
 
 const lsKey = "GOOD-import";
 
-export function LoadGOOD(props: Props) {
+export function ImportFromGOODDialog(props: Props) {
   const [data, setData] = React.useState<IGOODImport>();
   const dispatch = useAppDispatch();
   let { t } = useTranslation();
@@ -41,7 +41,7 @@ export function LoadGOOD(props: Props) {
   };
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     localStorage.setItem(lsKey, e.target.value);
-    setData(parseFromGO(e.target.value));
+    setData(parseFromGOOD(e.target.value));
   };
   return (
     <Dialog

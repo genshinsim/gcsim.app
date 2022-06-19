@@ -11,7 +11,7 @@ import {
   equipArtifacts,
   GOODChartoSrlChar,
   GOODWeapontoSrlWeapon,
-} from "./helpers";
+} from "./GOODToSrl.functions";
 
 export interface IGOODImport {
   err: string;
@@ -26,7 +26,7 @@ type GOODArtifactBank = {
   [char in GOODCharacterKey]?: GOODArtifact[];
 };
 
-export function parseFromGO(val: string): IGOODImport {
+export function parseFromGOOD(val: string): IGOODImport {
   let result: {
     err: string;
     characters: Character[];
