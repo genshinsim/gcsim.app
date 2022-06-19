@@ -1,1 +1,1 @@
-export * from "./LoadGOOD";
+export * from "./ImportFromGOODDialog";
