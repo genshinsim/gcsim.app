@@ -9,7 +9,7 @@ import {
 import { Popover2 } from "@blueprintjs/popover2";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { LoadGOOD } from "~src/Components/GOOD";
+import { ImportFromGOODDialog } from "~src/Components/GOOD";
 import { useAppSelector, RootState, useAppDispatch } from "~src/store";
 import { SimWorkerOptions } from "../Components";
 import { SimProgress } from "../Components/SimProgress";
@@ -105,7 +105,10 @@ export const Toolbox = ({ canRun = true }: { canRun?: boolean }) => {
         isOpen={openProgress}
         onClose={() => setOpenProgress(false)}
       />
-      <LoadGOOD isOpen={openImport} onClose={() => setOpenImport(false)} />
+      <ImportFromGOODDialog
+        isOpen={openImport}
+        onClose={() => setOpenImport(false)}
+      />
       <SimWorkerOptions
         isOpen={openWorkers}
         onClose={() => setOpenWorkers(false)}
