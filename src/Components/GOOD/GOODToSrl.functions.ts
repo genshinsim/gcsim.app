@@ -10,7 +10,6 @@ import {
 } from "./GOODTypes";
 import ArtifactMainStatsData from "~src/Components/Artifacts/artifact_main_gen.json";
 import { characterKeyToICharacter } from "~src/Components/Character";
-import { weapons } from "~src/Components/Weapon";
 import { ascLvlMax, StatToIndexMap } from "~src/util";
 type rarityValue = "1" | "2" | "3" | "4" | "5";
 const convertRarity: rarityValue[] = ["1", "2", "3", "4", "5"];
@@ -35,7 +34,7 @@ export function sumArtifactStats(artifacts: GOODArtifact[]): number[] {
         ArtifactMainStatsData[convertRarity[artifact.rarity - 1]][
           artifact.mainStatKey
         ][artifact.level];
-      const srlStat = goodStattoSrlStat(artifact.mainStatKey);
+      const srlStat = GOODStattoSrlStat(artifact.mainStatKey);
       if (srlStat === undefined) return;
       totalStats[StatToIndexMap[srlStat]] += mainStatValue;
     } else {
@@ -44,7 +43,7 @@ export function sumArtifactStats(artifacts: GOODArtifact[]): number[] {
     }
 
     artifact.substats.forEach((substat) => {
-      const srlStat = goodStattoSrlStat(substat.key);
+      const srlStat = GOODStattoSrlStat(substat.key);
       if (srlStat === undefined) return;
       if (substat.key.includes("_")) {
         totalStats[StatToIndexMap[srlStat]] += substat.value / 100;
@@ -56,7 +55,7 @@ export function sumArtifactStats(artifacts: GOODArtifact[]): number[] {
   return totalStats;
 }
 
-export function goodStattoSrlStat(goodStat: GOODStatKey): string | undefined {
+export function GOODStattoSrlStat(goodStat: GOODStatKey): string | undefined {
   switch (goodStat) {
     case "hp":
       return "HP";
@@ -145,13 +144,12 @@ export function equipArtifacts(
     };
   }
 }
+
 export function GOODChartoSrlChar(
   goodChar: GOODCharacter,
   weapon: Weapon | undefined
 ): Character | undefined {
   let today = new Date();
-  //copy over all the attributes we care about; ignore anything
-  //we don't need
   const name = GOODKeytoGCSIMKey(goodChar.key);
   const iChar = characterKeyToICharacter[name];
   if (iChar == undefined) {
@@ -184,6 +182,7 @@ export function GOODChartoSrlChar(
     date_added: today.toLocaleDateString(),
   };
 }
+
 export function GOODKeytoGCSIMKey(
   goodKey: GOODArtifactSetKey | GOODCharacterKey | GOODWeaponKey
 ) {

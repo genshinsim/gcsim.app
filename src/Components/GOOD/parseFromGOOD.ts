@@ -60,6 +60,7 @@ export function parseFromGOOD(val: string): IGOODImport {
       characters: [],
     };
   }
+
   let weaponBank: WeaponBank = extractWeapons(data.weapons);
 
   let artifactBank: GOODArtifactBank = {};
@@ -72,8 +73,10 @@ export function parseFromGOOD(val: string): IGOODImport {
     weaponBank,
     artifactBank
   );
+
   return result;
 }
+
 const extractWeapons = (weapons: GOODWeapon[]): WeaponBank => {
   const result: WeaponBank = {};
   weapons.forEach((goodWeapon) => {
@@ -84,6 +87,7 @@ const extractWeapons = (weapons: GOODWeapon[]): WeaponBank => {
   });
   return result;
 };
+
 const extractArtifacts = (artifacts: GOODArtifact[]): GOODArtifactBank => {
   const result: GOODArtifactBank = {};
   artifacts.forEach((goodArtifact) => {
