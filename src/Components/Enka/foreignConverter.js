@@ -10,7 +10,6 @@ import RelMP from "./GenshinData/ReliquaryMainPropExcelConfigData.json";
 import RelAffix from "./GenshinData/ReliquaryAffixExcelConfigData.json";
 import ManualText from "./GenshinData/ManualTextMapConfigData.json";
 import TextMap from "./GenshinData/EnkaTextMapEN.json";
-import { unstable_renderSubtreeIntoContainer } from "react-dom";
 
 // : { [key: string]: number }
 ManualTextMap = {};
