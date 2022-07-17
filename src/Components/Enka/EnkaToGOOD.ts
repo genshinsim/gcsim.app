@@ -13,6 +13,13 @@ import {
   IGOOD,
   ISubstat,
 } from "../GOOD/GOODTypes";
+import {
+  EnkaData,
+  FightProp,
+  GenshinItemReliquary,
+  GenshinItemWeapon,
+  ReliquaryEquipType,
+} from "./EnkaTypes";
 
 export default function EnkaToGOOD(enkaData: EnkaData): IGOOD {
   let characters: GOODCharacter[] = [];
@@ -58,7 +65,7 @@ export default function EnkaToGOOD(enkaData: EnkaData): IGOOD {
           const enkaReliquary = equip as GenshinItemReliquary;
           const reliquary: GOODArtifact = {
             setKey: getGOODKeyFromReliquaryNameTextMapHash(
-              enkaReliquary.flat.nameTextMapHash
+              enkaReliquary.flat.setNameTextMapHash
             ),
             level: enkaReliquary.reliquary.level - 1,
             slotKey: FRZ.reliquaryTypeToGOODKey(enkaReliquary.flat.equipType),
@@ -179,9 +186,10 @@ function getGOODKeyFromWeaponNameTextMapHash(
 function getGOODKeyFromReliquaryNameTextMapHash(
   reliquaryNameTextMapHash: string
 ): GOODArtifactSetKey {
-  return FRZ.textToGOODKey(
+  const res = FRZ.textToGOODKey(
     textMap[reliquaryNameTextMapHash]
   ) as GOODArtifactSetKey;
+  return res;
 }
 
 function getGOODSubstatsFromReliquarySubstats(
@@ -195,14 +203,10 @@ function getGOODSubstatsFromReliquarySubstats(
   }
   let GOODSubstats: ISubstat[] = [];
   for (let reliquarySubstat of reliquarySubstats) {
-    const key = FRZ.fightPropToGOODKey(reliquarySubstat.appendPropId);
-    let value = reliquarySubstat.statValue;
-
-    if (key[key.length - 1] == "_")
-      value = Math.round((value * 100 + Number.EPSILON + 0.0001) * 10) / 10;
-    else value = +Math.round(value).toFixed(1);
-
-    GOODSubstats.push({ key, value });
+    GOODSubstats.push({
+      key: FRZ.fightPropToGOODKey(reliquarySubstat.appendPropId),
+      value: reliquarySubstat.statValue,
+    });
   }
   return GOODSubstats;
 }

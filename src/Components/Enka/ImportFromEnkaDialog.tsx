@@ -26,7 +26,7 @@ const AppToaster = Toaster.create({
 const lsKey = "Enka-UID";
 
 export default function ImportFromEnkaDialog(props: Props) {
-  const [error, setError] = React.useState<string>("none");
+  const [message, setMessage] = React.useState<string>("");
   const [uid, setUid] = React.useState<string>("");
   const dispatch = useAppDispatch();
 
@@ -34,14 +34,13 @@ export default function ImportFromEnkaDialog(props: Props) {
     if (uid && validateUid(uid)) {
       const chars = await FetchCharsFromEnka(uid);
       if (chars) {
-        console.log(chars);
-        setError("none");
+        setMessage("success");
         // dispatch(userDataActions.loadFromGOOD({ data: chars }));
       } else {
-        setError("Error fetching characters");
+        setMessage("Error fetching characters");
       }
     } else {
-      setError("Invalid UID");
+      setMessage("Invalid UID");
     }
   }
 
@@ -81,14 +80,18 @@ export default function ImportFromEnkaDialog(props: Props) {
           name.
         </p>
 
-        {error === "none" ? (
+        {message === "success" ? (
           <Callout intent="success" className="mt-2 p-2">
             Data retrieved successfully
           </Callout>
         ) : (
-          <Callout intent="warning" className="mt-2 p-2">
-            {error}
-          </Callout>
+          <div>
+            {message && (
+              <Callout intent="warning" className="mt-2 p-2">
+                {message}
+              </Callout>
+            )}
+          </div>
         )}
       </div>
       <div className={Classes.DIALOG_FOOTER}>
