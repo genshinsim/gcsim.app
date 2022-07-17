@@ -11,7 +11,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { userDataActions } from "~src/Pages/Sim/userDataSlice";
 import { useAppDispatch } from "~src/store";
-import { IGOODImport } from "../GOOD/parseFromGOOD";
+import { IGOODImport, parseFromGOOD } from "../GOOD/parseFromGOOD";
 import FetchCharsFromEnka from "./FetchCharsFromEnka";
 
 type Props = {
@@ -32,10 +32,12 @@ export default function ImportFromEnkaDialog(props: Props) {
 
   async function handleClick() {
     if (uid && validateUid(uid)) {
-      const chars = await FetchCharsFromEnka(uid);
-      if (chars) {
+      const GOODchars = await FetchCharsFromEnka(uid);
+      if (GOODchars) {
         setMessage("success");
-        // dispatch(userDataActions.loadFromGOOD({ data: chars }));
+        const chars = parseFromGOOD(JSON.stringify(GOODchars));
+        console.log(chars);
+        dispatch(userDataActions.loadFromGOOD({ data: chars.characters }));
       } else {
         setMessage("Error fetching characters");
       }
@@ -64,7 +66,7 @@ export default function ImportFromEnkaDialog(props: Props) {
         </p>
         <Callout intent="warning" title="Warning">
           Importing will replace any existing GOOD/Enka import you already have.
-          This action cannot be reversed.
+          This action cannot be reversed. P.S. Ayaka talents are bugged
         </Callout>
         <input
           value={uid}
