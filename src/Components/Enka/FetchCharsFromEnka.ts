@@ -1,10 +1,5 @@
 import EnkaToGOOD from "./EnkaToGOOD";
 
-interface EnkaResponse {
-  playerInfo: any;
-  avatarInfoList: any[];
-}
-
 export default async function FetchandValidateDataFromEnka(validUid: string) {
   const enkaResponse = await fetch(
     `https://enka.gcsim.workers.dev/${validUid}`

@@ -61,7 +61,7 @@ export interface GenshinItemWeapon {
     rankLevel: number;
     weaponStats: [
       {
-        // If this isn't attack, the world is broken
+        // If this isn't attack, I've probably quit by then
         appendPropId: "FIGHT_PROP_BASE_ATTACK";
         statValue: number;
       },

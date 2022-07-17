@@ -8,10 +8,9 @@ import {
   Toaster,
 } from "@blueprintjs/core";
 import React from "react";
-import { useTranslation } from "react-i18next";
 import { userDataActions } from "~src/Pages/Sim/userDataSlice";
 import { useAppDispatch } from "~src/store";
-import { IGOODImport, parseFromGOOD } from "../GOOD/parseFromGOOD";
+import { parseFromGOOD } from "../GOOD/parseFromGOOD";
 import FetchCharsFromEnka from "./FetchCharsFromEnka";
 
 type Props = {
@@ -31,6 +30,7 @@ export default function ImportFromEnkaDialog(props: Props) {
   const dispatch = useAppDispatch();
 
   async function handleClick() {
+    localStorage.setItem(lsKey, uid);
     if (uid && validateUid(uid)) {
       const GOODchars = await FetchCharsFromEnka(uid);
       if (GOODchars) {
