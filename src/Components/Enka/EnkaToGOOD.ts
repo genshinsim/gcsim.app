@@ -15,12 +15,6 @@ import {
 } from "../GOOD/GOODTypes";
 
 export default function EnkaToGOOD(enkaData: EnkaData): IGOOD {
-  const GOOD = {
-    format: "GOOD" as IGOOD["format"],
-    version: 1,
-    source: "gcsimFromEnka",
-  };
-
   let characters: GOODCharacter[] = [];
   let artifacts: GOODArtifact[] = [];
   let weapons: GOODWeapon[] = [];
