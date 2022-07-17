@@ -9,7 +9,5 @@ export default async function FetchandValidateDataFromEnka(validUid: string) {
   }
 
   const enkaData = await enkaResponse.json();
-  const goodData = EnkaToGOOD(enkaData);
-  console.log(goodData);
-  return goodData;
+  return EnkaToGOOD(enkaData);
 }

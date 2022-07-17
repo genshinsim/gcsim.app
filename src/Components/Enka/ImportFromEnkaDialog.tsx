@@ -36,7 +36,6 @@ export default function ImportFromEnkaDialog(props: Props) {
       if (GOODchars) {
         setMessage("success");
         const chars = parseFromGOOD(JSON.stringify(GOODchars));
-        console.log(chars);
         dispatch(userDataActions.loadFromGOOD({ data: chars.characters }));
       } else {
         setMessage("Error fetching characters");
