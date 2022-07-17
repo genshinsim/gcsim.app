@@ -26,7 +26,7 @@ const AppToaster = Toaster.create({
 const lsKey = "Enka-UID";
 
 export default function ImportFromEnkaDialog(props: Props) {
-  const [data, setData] = React.useState<IGOODImport>();
+  const [error, setError] = React.useState<string>("none");
   const [uid, setUid] = React.useState<string>("");
   const dispatch = useAppDispatch();
 
@@ -35,13 +35,13 @@ export default function ImportFromEnkaDialog(props: Props) {
       const chars = await FetchCharsFromEnka(uid);
       if (chars) {
         console.log(chars);
-        setData({ characters: chars, err: "" });
-        //   dispatch(userDataActions.loadFromGOOD({ data: chars }));
+        setError("none");
+        // dispatch(userDataActions.loadFromGOOD({ data: chars }));
       } else {
-        setData({ characters: [], err: "Error fetching characters" });
+        setError("Error fetching characters");
       }
     } else {
-      setData({ characters: [], err: "Invalid UID" });
+      setError("Invalid UID");
     }
   }
 
@@ -80,17 +80,16 @@ export default function ImportFromEnkaDialog(props: Props) {
           character via Add Character button and search for the character's
           name.
         </p>
-        {data ? (
-          data.err === "" ? (
-            <Callout intent="success" className="mt-2 p-2">
-              Data retrieved successfully
-            </Callout>
-          ) : (
-            <Callout intent="warning" className="mt-2 p-2">
-              {data!.err}
-            </Callout>
-          )
-        ) : null}
+
+        {error === "none" ? (
+          <Callout intent="success" className="mt-2 p-2">
+            Data retrieved successfully
+          </Callout>
+        ) : (
+          <Callout intent="warning" className="mt-2 p-2">
+            {error}
+          </Callout>
+        )}
       </div>
       <div className={Classes.DIALOG_FOOTER}>
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
