@@ -11,26 +11,35 @@ const charNames = IngameNamesJson.English.character_names;
 type CharEntry = [keyof typeof charNames, string];
 
 function CharCard({ charEntry }: { charEntry: CharEntry }) {
+  const tooLongNames = [
+    "Kaedehara Kazuha",
+    "Kamisato Ayaka",
+    "Raiden Shogun",
+    "Sangonomiya Kokomi",
+    "Kamisato Ayato",
+    "Shikanoin Heizou",
+    "Traveler (Anemo)",
+    "Traveler (Geo)",
+    "Traveler (Electro)",
+    "Traveler (Pyro)",
+  ];
   const [_, setLocation] = useLocation();
   const [shortName, name] = charEntry;
   return (
     <div
-      className="hover:bg-gray-600 border border-gray-700 hover:border-gray-400 rounded-md relative"
-      style={{ display: "inline-block", margin: "5px" }}
+      className="hover:bg-gray-600 border border-gray-700 hover:border-gray-400 rounded-md max-h"
       onClick={() => setLocation(`/db/${shortName}`)}
     >
       <img
         src={`/images/avatar/${shortName}.png`}
         alt={name}
-        className="w-16"
-        style={{ margin: "auto" }}
+        className="margin-auto"
       />
-      <div
-        className="top-0 right-0 text-sm font-semibold text-grey-300"
-        style={{ textAlign: "center" }}
-      >
-        {name}
-      </div>
+      {tooLongNames.includes(name) ? (
+        <div className="text-xs   text-center">{name}</div>
+      ) : (
+        <div className="text-md   text-center">{name}</div>
+      )}
     </div>
   );
 }
@@ -39,42 +48,19 @@ const LOCALSTORAGE_DISC_KEY = "gcsim-db-disclaimer-show";
 
 function CharsView({ characters }: { characters: CharEntry[] }) {
   // TODO consider removing this, idk what does it do lol
-  const parentRef = React.useRef<HTMLDivElement>(null!);
   return (
     <div className="h-full w-full pl-2 pr-2">
-      <AutoSizer defaultHeight={100}>
-        {({ height, width }) => (
+      <div className="grid grid-cols-12 gap-2">
+        {characters.map((entry) => (
           <div
-            ref={parentRef}
-            style={{
-              minHeight: "100px",
-              height: height,
-              width: width,
-              overflow: "auto",
-              position: "relative",
-            }}
-            id="resize-inner"
+            key={entry[0]}
+            className=""
+            // ref={virtualRow.measureRef}
           >
-            <div
-              className="ListInner"
-              style={{
-                width: width - 50,
-                position: "relative",
-              }}
-            >
-              {characters.map(entry => (
-                <div
-                  key={entry[0]}
-                  style={{ display: "inline-block" }}
-                  // ref={virtualRow.measureRef}
-                >
-                  <CharCard charEntry={entry} />
-                </div>
-              ))}
-            </div>
+            <CharCard charEntry={entry} />
           </div>
-        )}
-      </AutoSizer>
+        ))}
+      </div>
     </div>
   );
 }
@@ -103,19 +89,16 @@ export function DB() {
       )
     : charsEntries;
   return (
-    <main className="flex flex-col h-full m-2 w-full xs:w-full sm:w-[640px] hd:w-full wide:w-[1160px] ml-auto mr-auto ">
+    <div className="flex flex-col h-full m-2 w-full xs:w-full sm:w-[640px] hd:w-full wide:w-[1160px] ml-auto mr-auto ">
       <LolDanger />
       <div className="flex flex-row items-center">
-        <div
-          className="ml-auto flex flex-row gap-x-1"
-          style={{ marginLeft: "0", marginRight: "auto" }}
-        >
+        <div className=" flex flex-row gap-x-1">
           <ShowFaqsButton setShowDisclaimer={setShowDisclaimer} />
           <InputGroup
             leftIcon="search"
             placeholder={t("db.type_to_search")}
             value={searchString}
-            onChange={e => setSearchString(e.target.value)}
+            onChange={(e) => setSearchString(e.target.value)}
           />
         </div>
       </div>
@@ -128,9 +111,10 @@ export function DB() {
         onClose={() => setShowDisclaimer(false)}
         hideAlways={hideDisclaimer}
       />
-    </main>
+    </div>
   );
 }
+
 function ShowFaqsButton({
   setShowDisclaimer,
 }: {
