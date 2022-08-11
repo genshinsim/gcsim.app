@@ -23,23 +23,59 @@ function CharCard({ charEntry }: { charEntry: CharEntry }) {
     "Traveler (Electro)",
     "Traveler (Pyro)",
   ];
+  const rareCharNames = [
+    "amber",
+    "barbara",
+    "beidou",
+    "bennett",
+    "chongyun",
+    "diona",
+    "fischl",
+    "gorou",
+    "kaeya",
+    "kujousara",
+    "lisa",
+    "kuki",
+    "ningguang",
+    "noelle",
+    "razor",
+    "heizou",
+    "rosaria",
+    "sucrose",
+    "sayu",
+    "thoma",
+    "xiangling",
+    "xinyan",
+    "xingqiu",
+    "yanfei",
+    "yunjin",
+  ];
+
   const [_, setLocation] = useLocation();
   const [shortName, name] = charEntry;
+  console.log(name);
+
+  const legendaryCss = "hover:bg-opacity-30     bg-opacity-60 bg-[#FFB13F] ";
+  const rareCss = "hover:bg-opacity-30     bg-opacity-60 bg-[#D28FD6]";
   return (
-    <div
-      className="hover:bg-gray-600 border border-gray-700 hover:border-gray-400 rounded-md max-h"
-      onClick={() => setLocation(`/db/${shortName}`)}
-    >
-      <img
-        src={`/images/avatar/${shortName}.png`}
-        alt={name}
-        className="margin-auto"
-      />
-      {tooLongNames.includes(name) ? (
-        <div className="text-xs   text-center">{name}</div>
-      ) : (
-        <div className="text-md   text-center">{name}</div>
-      )}
+    <div className=" border-gray-700 border-2  rounded-md">
+      <div
+        className={rareCharNames.includes(shortName) ? rareCss : legendaryCss}
+        onClick={() => setLocation(`/db/${shortName}`)}
+      >
+        <img
+          src={`/images/avatar/${shortName}.png`}
+          alt={name}
+          className="margin-auto"
+        />
+      </div>
+      <div>
+        {tooLongNames.includes(name) ? (
+          <div className="text-xs   text-center">{name}</div>
+        ) : (
+          <div className="text-md   text-center">{name}</div>
+        )}
+      </div>
     </div>
   );
 }
